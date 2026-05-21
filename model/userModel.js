@@ -21,7 +21,7 @@ const userSchema =new mongoose.Schema({
     profileImage:{
         type:String,
         require:false,
-        default:"http://localhost:8000/uploads/6a0c40b6cee6f805ac069f42-1779188714519avatar-photo-default-user-icon-picture-face-vector-48139643.webp"
+        default:"http://localhost:8000/uploads/6a0c40b6cee6f805ac069f42-1779371014010.webp"
     },
     createdAt:{
         type:Date,
