@@ -11,6 +11,7 @@ import {
 } from "../controller/userController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import { uploadSingle } from "../middleware/uploadMiddleware.js";
+import { loginLimiter } from "../middleware/rateLimiter.js";
 
 const routes = express.Router();
 
@@ -44,6 +45,10 @@ routes.post("/create", create);
  *   post:
  *     tags: [Auth]
  *     summary: Log in and receive a JWT
+ *     description: |
+ *       Rate-limited to **5 failed attempts per 10 minutes per IP** to slow
+ *       down brute-force attacks. Successful logins do not count toward the
+ *       limit.
  *     requestBody:
  *       required: true
  *       content:
@@ -63,30 +68,40 @@ routes.post("/create", create);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorEnvelope'
+ *       429:
+ *         description: Too many failed login attempts.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorEnvelope'
  *       500: { $ref: '#/components/responses/ServerError' }
  */
-routes.post("/login", login);
+routes.post("/login", loginLimiter, login);
 
 /**
  * @openapi
  * /api/user/getAllUser:
  *   get:
  *     tags: [Users]
- *     summary: List all users
+ *     summary: List users (paginated)
+ *     description: Returns a page of users plus pagination metadata (`page`, `limit`, `total`, `totalPages`). Sorted by newest first.
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/PageParam'
+ *       - $ref: '#/components/parameters/LimitParam'
  *     responses:
  *       200:
  *         description: Users fetched.
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/UserListEnvelope'
+ *               $ref: '#/components/schemas/PaginatedUsersEnvelope'
  *       401: { $ref: '#/components/responses/Unauthorized' }
- *       404: { $ref: '#/components/responses/NotFound' }
  *       500: { $ref: '#/components/responses/ServerError' }
  */
 routes.get("/getAllUser", authMiddleware, fetch);
+
 
 /**
  * @openapi

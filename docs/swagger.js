@@ -181,6 +181,22 @@ const definition = {
           },
         },
       },
+      PaginatedUsersEnvelope: {
+        type: "object",
+        properties: {
+          status: { type: "integer", example: 200 },
+          success: { type: "boolean", example: true },
+          message: { type: "string", example: "fetch users successfully" },
+          User: {
+            type: "array",
+            items: { $ref: "#/components/schemas/User" },
+          },
+          page: { type: "integer", example: 1 },
+          limit: { type: "integer", example: 10 },
+          total: { type: "integer", example: 42 },
+          totalPages: { type: "integer", example: 5 },
+        },
+      },
       ErrorEnvelope: {
         type: "object",
         properties: {
@@ -198,6 +214,26 @@ const definition = {
         required: true,
         description: "Mongo ObjectId of the target user.",
         schema: { type: "string", example: "6a0ed550569e07b629ec6a78" },
+      },
+      PageParam: {
+        name: "page",
+        in: "query",
+        required: false,
+        description: "1-based page number. Defaults to 1.",
+        schema: { type: "integer", minimum: 1, default: 1, example: 1 },
+      },
+      LimitParam: {
+        name: "limit",
+        in: "query",
+        required: false,
+        description: "Number of items per page (1-100). Defaults to 10.",
+        schema: {
+          type: "integer",
+          minimum: 1,
+          maximum: 100,
+          default: 10,
+          example: 10,
+        },
       },
     },
     responses: {

@@ -10,6 +10,14 @@ const userSchema =new mongoose.Schema({
         require:true,
         unique:true
     },
+    page:{
+        type:String,
+        require:true
+    },
+    limit:{
+        type:Number,
+        require:true
+    },
     address:{
         type:String,
         require:true
